@@ -1,0 +1,85 @@
+grammar org.xtext.example.SQLProjectLanguage with org.eclipse.xtext.common.Terminals
+
+generate sQLProjectLanguage "http://www.xtext.org/example/SQLProjectLanguage"
+
+SQLSystem:
+	'system' name=ID 'url' value=STRING operation+=Operations*
+	;
+	
+Operations:
+	Add|Remove|Select|Relationship
+;
+
+Relationship:
+	'relation' name= ID 'from' foreignkey+=ForeignKey*
+;
+
+Select:
+	'select' name = ID table=Table  attributes+=Attribute* 
+;
+
+Table:
+	'table' table=[Add]
+;
+
+Remove:
+	'remove' name = ID table=Table attributes +=Attribute* 
+;
+
+ForeignKey:
+	'foreing' 'key' name=ID ':'type=('String'|'int') 'reference'overType=[Add] //'.' att= [Attribute]
+;
+
+Add:
+	'add' name = ID (primeryKey = PrimaryKey)? attributes+=Attribute* 
+;
+
+PrimaryKey://PRIMARY KEY
+	'primary' 'key' name=ID ':' type=('String'|'int') ('require' requirement= [PrimaryKey] requirement1= LogicalEXP)?
+;
+
+
+Attribute:
+   	'attribute' name=ID  ':' type=('String'|'int') ('require' requirement= [Attribute] requirement1= LogicalEXP)?
+   	
+;
+
+LogicalEXP:
+	op=RelationalOp right=PlusMin
+;
+
+RelationalOp:
+	type=('=' |  '<' |  '>' |  '<=' |  '>=')
+;
+
+PlusMin:
+	exp=Factor tal+=PlusM*
+;
+
+Factor:
+	exp1=Primitive tal+=FactorD*
+;
+
+Primitive:
+	prim=IntExp //| '(' LogicalEXP ')'  
+;
+
+FactorD:
+	type=('/'|'*') tal = Primitive
+;
+
+PlusM:
+	type=('+'|'-') tal = Factor
+;
+
+
+IntExp:
+	value=INT
+;
+
+
+
+
+
+
+	
